@@ -13,6 +13,8 @@ export type ProgramIcon =
   | 'party'
   | 'end'
 
+import type { OpenSound } from '../components/intro/openSound'
+
 export type HeroVariant = 'olive' | 'light'
 
 export interface InvitationConfig {
@@ -38,6 +40,11 @@ export interface InvitationConfig {
     tapHint: string
     /** Debossed into the wax seal (Pinyon Script) */
     monogram: string
+    /**
+     * Sound when the seal is tapped: 'envelope' (paper envelope opening), 'chime' (soft bells), 'seal' (wax crack + paper),
+     * 'paper' (rustle), 'none', or a file like '/audio/open.mp3'. Preview with ?sound=envelope
+     */
+    openSound: OpenSound
     /** What is pressed into the wax: a flower sprig or the monogram */
     sealEmblem: 'flower' | 'monogram'
     /** Optional raster pattern; if this file exists it replaces the SVG botanical print */
@@ -133,6 +140,19 @@ export interface InvitationConfig {
     thankYou: string
     note: string
   }
+  /** Link preview when the invitation is shared (WhatsApp, Facebook, iMessage, Telegram…) */
+  share: {
+    title: string
+    description: string
+    /** 1200×630 image in /public */
+    image: string
+    imageAlt: string
+    /**
+     * Full site address once deployed, e.g. 'https://mohamed-mai.vercel.app'.
+     * WhatsApp/Facebook need it to show the preview image.
+     */
+    siteUrl: string
+  }
   music: {
     src: string
     /** Start playing when the seal is tapped */
@@ -161,6 +181,7 @@ export const invitation: InvitationConfig = {
     title: "You're invited",
     tapHint: 'Tap the seal to open',
     monogram: 'M&M',
+    openSound: 'envelope',
     sealEmblem: 'flower',
     patternImage: '/textures/botanical-pattern.png',
     colors: {
@@ -252,6 +273,13 @@ export const invitation: InvitationConfig = {
   footer: {
     thankYou: 'Thank you',
     note: 'We can’t wait to celebrate with you.',
+  },
+  share: {
+    title: 'Mohamed & Mai — You’re invited',
+    description: 'Join us to celebrate our wedding · Friday, 11 December 2026 · 5:00 PM',
+    image: '/share/preview.jpg',
+    imageAlt: 'A sage envelope with a pink wax seal — Mohamed & Mai, 11.12.2026',
+    siteUrl: '',
   },
   music: {
     src: '/audio/music.mp3',

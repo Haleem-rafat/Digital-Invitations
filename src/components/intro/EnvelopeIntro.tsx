@@ -11,7 +11,7 @@ import { invitation } from '../../data/invitation'
 import { FallingPetals } from '../florals/Florals'
 import { DECKLE, deckleMaskSvg } from './geometry'
 import { Paper } from './Paper'
-import { playPaperRustle } from './paperRustle'
+import { playOpenSound, type OpenSound } from './openSound'
 import { EASE, FLAP_OPEN_ANGLE, TIMELINE } from './timeline'
 import { useTilt } from './useTilt'
 import { WaxSeal } from './WaxSeal'
@@ -20,6 +20,11 @@ const TRIANGLE = 'polygon(0 0, 100% 0, 50% 100%)'
 // The flap starts 4% above the screen (like the card) so tilting never reveals its hinge; tip stays at 38%.
 const FLAP_OVERHANG = 4
 const FLAP_HEIGHT = `${38 + FLAP_OVERHANG}%`
+
+/** Opening sound from the config, overridable with ?sound=chime|seal|paper|none to preview. */
+function openSound(): OpenSound {
+  return new URLSearchParams(window.location.search).get('sound') ?? invitation.envelope.openSound
+}
 
 const svgUri = (svg: string) => `url("data:image/svg+xml,${encodeURIComponent(svg)}")`
 
@@ -109,7 +114,7 @@ export function EnvelopeIntro({ guestName, onTap, onOpened }: EnvelopeIntroProps
     setOpening(true)
     breathing.current?.stop()
     navigator.vibrate?.(15)
-    playPaperRustle()
+    playOpenSound(openSound())
 
     const T = TIMELINE
     const play = (c: AnimationPlaybackControls) => running.current.push(c)
