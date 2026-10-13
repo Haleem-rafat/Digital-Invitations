@@ -1,119 +1,138 @@
-import { motion, useReducedMotion, type Transition } from 'framer-motion'
-import { MapPin } from 'lucide-react'
-import { invitation } from '../data/invitation'
-import { useCountdown } from '../hooks/useCountdown'
-import { FloralDivider } from './Florals'
+import { motion, useReducedMotion, useScroll, useTransform, type Transition } from 'framer-motion'
+import { ChevronDown } from 'lucide-react'
+import { invitation, type HeroVariant } from '../data/invitation'
+import { EASE_LUX } from '../lib/motion'
+import { FloralCorners } from './florals/Florals'
 import { EASE, TIMELINE } from './intro/timeline'
 
-const pad = (n: number) => String(n).padStart(2, '0')
+/** Colours for each hero look. */
+const LOOKS: Record<HeroVariant, { img: string; wash: string; inset: string; label: string; names: string; amp: string; date: string; hint: string }> = {
+  olive: {
+    img: '',
+    wash: 'from-olive/70 via-olive/30 via-50% to-transparent',
+    inset: 'inset 0 10px 30px rgb(20 24 10 / 0.35)',
+    label: 'text-cream [text-shadow:0_1px_8px_rgb(20_24_10/0.35)]',
+    names: 'text-cream [text-shadow:0_2px_16px_rgb(20_24_10/0.35)]',
+    amp: 'text-gold [text-shadow:0_1px_10px_rgb(20_24_10/0.3)]',
+    date: 'text-cream [text-shadow:0_1px_10px_rgb(20_24_10/0.35)]',
+    hint: 'text-olive',
+  },
+  light: {
+    img: 'opacity-80',
+    wash: 'from-page/95 via-page/60 via-55% to-page/10',
+    inset: 'inset 0 10px 26px rgb(47 47 47 / 0.08)',
+    label: 'text-ink/75',
+    names: 'text-olive',
+    amp: 'text-gold',
+    date: 'text-ink',
+    hint: 'text-muted',
+  },
+}
 
-// Arch geometry in a 300×420 box (matches the container's aspect ratio).
-const OUTER_ARCH = 'M10 420V160A140 140 0 0 1 290 160V420Z'
-const INNER_ARCH = 'M18 412V160A132 132 0 0 1 282 160V412Z'
-const HAIRLINE = 'M32 398V160A118 118 0 0 1 268 160V398Z'
+/** Hero look from the config, overridable with ?hero=olive|light so the client can compare. */
+function heroVariant(): HeroVariant {
+  const q = new URLSearchParams(window.location.search).get('hero')
+  return q === 'olive' || q === 'light' ? q : invitation.hero.variant
+}
 
 /** `play` flips to true the moment the seal is tapped; delays come from the intro timeline. */
 export function Hero({ play }: { play: boolean }) {
+  const variant = heroVariant()
+  const look = LOOKS[variant]
   const reduce = useReducedMotion()
-  const { couple, hero, dateDisplay, venue, dateISO } = invitation
-  const { days, hours, minutes, seconds, isPast } = useCountdown(dateISO)
+  const { couple, hero, dateDisplay, timeDisplay } = invitation
   const T = TIMELINE
 
-  const crossfade: Transition = { duration: T.reduced.fade, delay: T.reduced.heroDelay, ease: 'easeInOut' }
+  // Scene drifts at 0.85× scroll speed
+  const { scrollY } = useScroll()
+  const sceneY = useTransform(scrollY, (v) => (reduce ? 0 : v * 0.15))
 
-  const fadeUp = (index: number) => ({
-    initial: { opacity: 0, y: reduce ? 0 : T.heroText.y },
-    animate: play ? { opacity: 1, y: 0 } : undefined,
-    transition: reduce
-      ? crossfade
-      : {
-          duration: T.heroText.duration,
-          delay: T.heroText.start + index * T.heroText.stagger,
-          ease: EASE.arch,
-        },
+  // label → names (handwriting) → date → scroll hint, one calm step at a time
+  const names = T.heroText.start + T.heroText.stagger
+  const at = {
+    label: T.heroText.start,
+    names,
+    date: names + 0.8,
+    hint: names + 1.0,
+  }
+  const crossfade: Transition = { duration: T.reduced.fade, delay: T.reduced.heroDelay, ease: 'easeInOut' }
+  const reveal = (delay: number) => ({
+    initial: reduce ? { opacity: 0 } : { opacity: 0, y: 24, filter: 'blur(6px)' },
+    animate: play ? { opacity: 1, y: 0, filter: 'blur(0px)', transitionEnd: { filter: 'none' } } : undefined,
+    transition: reduce ? crossfade : { duration: 0.9, delay, ease: EASE_LUX },
   })
 
-  const units = [
-    { label: 'Days', value: days },
-    { label: 'Hours', value: pad(hours) },
-    { label: 'Min', value: pad(minutes) },
-    { label: 'Sec', value: pad(seconds) },
-  ]
-
   return (
-    <section aria-labelledby="hero-title" className="px-5 pt-8 pb-16 text-center">
-      <div className="relative mx-auto aspect-[300/420] w-full overflow-hidden">
-        {/* illustration */}
-        <motion.div
-          className="absolute inset-0 will-change-transform"
-          initial={{ opacity: 0, scale: reduce ? 1 : T.heroBg.scaleFrom }}
-          animate={play ? { opacity: 1, scale: 1 } : undefined}
-          transition={reduce ? crossfade : { delay: T.heroBg.start, duration: T.heroBg.duration, ease: EASE.out }}
-        >
-          <img src={hero.image} alt={hero.imageAlt} className="size-full object-cover" fetchPriority="high" />
-          {/* cream wash so the names stay legible on any replacement image */}
-          <div className="absolute inset-0 bg-gradient-to-b from-cream/95 via-cream/55 via-45% to-transparent to-70%" />
+    <section aria-labelledby="hero-title" className="relative h-[100svh] min-h-[680px] overflow-hidden">
+      {/* Visual layer — its bottom 30% fades into the page so there is no hard edge */}
+      <div className="absolute inset-0 [mask-image:linear-gradient(to_bottom,#000_70%,transparent)] [-webkit-mask-image:linear-gradient(to_bottom,#000_70%,transparent)]">
+        <motion.div className="absolute inset-0 will-change-transform" style={{ y: sceneY }}>
+          <motion.div
+            className="absolute inset-0 will-change-transform"
+            initial={{ opacity: 0, scale: reduce ? 1 : T.heroBg.scaleFrom }}
+            animate={play ? { opacity: 1, scale: 1 } : undefined}
+            transition={reduce ? crossfade : { delay: T.heroBg.start, duration: T.heroBg.duration, ease: EASE.out }}
+          >
+            <img src={hero.images[variant]} alt={hero.imageAlt} className={`ken-burns size-full object-cover ${look.img}`} fetchPriority="high" />
+            {/* light wash so the names stay legible on any replacement image */}
+            <div className={`absolute inset-0 bg-gradient-to-b ${look.wash}`} />
+          </motion.div>
         </motion.div>
 
-        {/* arch frame overlay: cream surround + blush band, zooms in to frame the scene */}
-        <motion.svg
-          viewBox="0 0 300 420"
-          preserveAspectRatio="none"
-          className="absolute inset-0 size-full will-change-transform [filter:drop-shadow(0_8px_14px_rgb(74_63_58/0.18))]"
+        {/* Arch frame: page-coloured surround with an arched window, thin gold border; zooms 1.6 → 1 */}
+        <motion.div
+          className="absolute inset-x-4 top-4 -bottom-16 rounded-t-full border border-gold/70 will-change-transform"
+          style={{ boxShadow: `0 0 0 100vmax var(--color-page), ${look.inset}` }}
           initial={{ scale: reduce ? 1 : T.arch.scaleFrom }}
           animate={play ? { scale: 1 } : undefined}
           transition={reduce ? { duration: 0 } : { delay: T.arch.start, duration: T.arch.duration, ease: EASE.arch }}
           aria-hidden="true"
         >
-          <path d={`M0 0H300V420H0Z ${OUTER_ARCH}`} fill="#FBF6F1" fillRule="evenodd" />
-          <path d={`${OUTER_ARCH} ${INNER_ARCH}`} fill="#F4E4DC" fillRule="evenodd" />
-          <path d={OUTER_ARCH} fill="none" stroke="rgb(224 123 79 / 0.3)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-          <path d={HAIRLINE} fill="none" stroke="rgb(251 246 241 / 0.75)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-        </motion.svg>
-
-        <div className="absolute inset-x-0 top-[18%] px-8">
-          <motion.p {...fadeUp(0)} className="label !text-ink/70">
-            {hero.label}
-          </motion.p>
-          <motion.h1 {...fadeUp(1)} id="hero-title" className="mt-3 font-script text-[3.6rem] leading-[1.05] text-ink">
-            {couple.partner1}
-            <span className="block text-4xl text-terracotta">&amp;</span>
-            {couple.partner2}
-          </motion.h1>
-        </div>
+          <div className="absolute inset-[7px] rounded-t-full border border-gold/30" />
+        </motion.div>
       </div>
 
-      <motion.div {...fadeUp(2)} className="mt-8">
-        <FloralDivider className="mx-auto w-44 text-terracotta" />
-        <p className="mt-3 font-serif text-2xl">{dateDisplay}</p>
-        <p className="mt-2 flex items-center justify-center gap-1.5 font-sans text-xs font-light tracking-wider text-muted">
-          <MapPin className="size-3.5" strokeWidth={1.5} aria-hidden="true" />
-          {venue.name}
-        </p>
-      </motion.div>
+      {/* Flowers bloom in once the arch has settled */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 bottom-[18%]">
+        <FloralCorners className="w-44" opacity={0.8} bloom={play} bloomDelay={reduce ? 0 : T.arch.start + 0.5} />
+      </div>
 
-      <motion.div {...fadeUp(3)} className="mt-8">
-        {isPast ? (
-          <p className="font-script text-4xl text-terracotta">Just married!</p>
-        ) : (
-          <div
-            className="mx-auto grid max-w-xs grid-cols-4 gap-2.5"
-            role="timer"
-            aria-label={`${days} days, ${hours} hours, ${minutes} minutes until the wedding`}
-          >
-            {units.map((u) => (
-              <div key={u.label} className="rounded-2xl bg-white/70 py-3 shadow-soft ring-1 ring-blush">
-                <span className="block font-serif text-3xl leading-none tabular-nums" aria-hidden="true">
-                  {u.value}
-                </span>
-                <span className="label mt-1.5 block !text-[0.55rem] !tracking-[0.2em]" aria-hidden="true">
-                  {u.label}
-                </span>
-              </div>
-            ))}
+      <div className="relative flex h-full flex-col items-center justify-center px-8 pb-[14svh] text-center">
+        <motion.p {...reveal(at.label)} className={`font-sans text-xs font-normal tracking-[0.35em] uppercase ${look.label}`}>
+          {hero.label}
+        </motion.p>
+
+        <motion.h1
+          id="hero-title"
+          className={`mt-5 font-script text-[clamp(4.2rem,20vw,5.2rem)] leading-[1.02] ${look.names}`}
+          initial={reduce ? { opacity: 0 } : { clipPath: 'inset(-30% 100% -30% -10%)' }}
+          animate={play ? (reduce ? { opacity: 1 } : { clipPath: 'inset(-30% -10% -30% -10%)' }) : undefined}
+          transition={reduce ? crossfade : { delay: at.names, duration: 1.2, ease: EASE_LUX }}
+        >
+          {couple.partner1}
+          <span className={`block text-5xl ${look.amp}`}>&amp;</span>
+          {couple.partner2}
+        </motion.h1>
+
+        <motion.div {...reveal(at.date)} className={`mt-6 ${look.date}`}>
+          <div className="mx-auto mb-4 flex w-28 items-center gap-2" aria-hidden="true">
+            <span className="h-px flex-1 bg-gold" />
+            <span className="size-1.5 rotate-45 border border-gold" />
+            <span className="h-px flex-1 bg-gold" />
           </div>
-        )}
-      </motion.div>
+          <p className="font-serif text-[1.65rem] font-medium tracking-wide">{dateDisplay}</p>
+          <p className="mt-1 font-sans text-sm font-normal tracking-[0.3em] uppercase">{timeDisplay}</p>
+        </motion.div>
+
+        <motion.a
+          {...reveal(at.hint)}
+          href="#story"
+          className={`absolute bottom-[max(1.25rem,env(safe-area-inset-bottom))] flex flex-col items-center gap-1 ${look.hint}`}
+        >
+          <span className="font-serif text-lg italic">{hero.scrollHint}</span>
+          <ChevronDown className="bounce-soft size-5" strokeWidth={1.25} aria-hidden="true" />
+        </motion.a>
+      </div>
     </section>
   )
 }

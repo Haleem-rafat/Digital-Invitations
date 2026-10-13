@@ -15,6 +15,10 @@ function shade(hex: string, amount: number) {
 interface WaxSealProps {
   color: string
   monogram: string
+  /** Colour of the pressed monogram; defaults to a darker shade of the wax */
+  monogramColor?: string
+  /** Pressed design: an embossed flower sprig or the monogram */
+  emblem?: 'flower' | 'monogram'
   /** Glossy spot drifts opposite to the tilt */
   highlightX?: MotionValue<number>
   highlightY?: MotionValue<number>
@@ -25,7 +29,7 @@ interface WaxSealProps {
  * Layered vector wax seal (viewBox 120×120): bevelled irregular blob, darker inner rim,
  * raised ring, pressed-in centre with a debossed monogram, glossy highlight and shine sweep.
  */
-export function WaxSeal({ color, monogram, highlightX, highlightY, shine = true }: WaxSealProps) {
+export function WaxSeal({ color, monogram, monogramColor, emblem = 'monogram', highlightX, highlightY, shine = true }: WaxSealProps) {
   const id = useId().replace(/[^a-zA-Z0-9_-]/g, '')
   const u = (name: string) => `url(#${id}${name})`
   const deep = shade(color, -0.42)
@@ -108,6 +112,25 @@ export function WaxSeal({ color, monogram, highlightX, highlightY, shine = true 
       <circle cx="60" cy="60" r="40" fill="none" stroke={shade(color, 0.08)} strokeWidth="3.4" filter={u('raised')} />
       <circle cx="60" cy="60" r="33" fill={u('disc')} filter={u('pressed')} />
 
+      {emblem === 'flower' ? (
+        <>
+      {/* embossed flower sprig, raised out of the pressed centre */}
+      <g fill={shade(color, 0.06)} filter={u('raised')} transform="translate(60 61) scale(1.32) translate(-60 -61)">
+        {[0, 72, 144, 216, 288].map((a) => (
+          <ellipse key={a} cx="60" cy="44.5" rx="4" ry="6" transform={`rotate(${a} 60 50)`} />
+        ))}
+        <circle cx="60" cy="50" r="2.4" fill={shade(color, -0.08)} />
+        <path d="M59.2 55 Q 58.4 66 60 79 L 61 79 Q 60.2 66 60.8 55 Z" />
+        <path d="M59.6 68 C 55 63 50 63 46.5 65.5 C 50 68.5 55 69.5 59.6 68 Z" />
+        <path d="M60.4 72 C 65 67 70 67 73.5 69.5 C 70 72.5 65 73.5 60.4 72 Z" />
+        <path d="M59.4 64 Q 55 60 52.5 57.5 L 53.3 56.8 Q 56 59.8 60 63 Z" />
+        <path d="M51.5 57.5 C 49 55 49.5 51.5 51.5 50 C 53.5 51.5 54 55 51.5 57.5 Z" />
+        <path d="M60.6 64.5 Q 65 61 67.5 58.5 L 66.8 57.8 Q 64 60.6 60.2 63.4 Z" />
+        <path d="M68.5 58.5 C 71 56 70.5 52.5 68.5 51 C 66.5 52.5 66 56 68.5 58.5 Z" />
+      </g>
+        </>
+      ) : (
+        <>
       {/* debossed monogram: shadow on the top-left, highlight on the bottom-right */}
       <g fontFamily="'Pinyon Script', cursive" fontSize={fontSize} textAnchor="middle" dominantBaseline="central">
         <text x="60.7" y="61.9" fill="#fff" fillOpacity="0.26">
@@ -116,10 +139,13 @@ export function WaxSeal({ color, monogram, highlightX, highlightY, shine = true 
         <text x="59.3" y="60.3" fill="#000" fillOpacity="0.5">
           {monogram}
         </text>
-        <text x="60" y="61" fill={shade(color, -0.12)}>
+        <text x="60" y="61" fill={monogramColor ?? shade(color, -0.12)}>
           {monogram}
         </text>
       </g>
+
+        </>
+      )}
 
       <g clipPath={u('clip')}>
         <motion.g style={{ x: highlightX, y: highlightY }}>

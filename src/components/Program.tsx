@@ -1,62 +1,76 @@
+import { motion, useReducedMotion, type Variants } from 'framer-motion'
 import {
-  GlassWater,
   Heart,
-  Martini,
-  Moon,
-  Music,
+  Music2,
   PartyPopper,
-  ScrollText,
+  Sparkles,
+  Users,
   UtensilsCrossed,
+  Wine,
   type LucideIcon,
 } from 'lucide-react'
 import { invitation, type ProgramIcon } from '../data/invitation'
-import { Reveal } from './Reveal'
-import { SectionHeading } from './SectionHeading'
+import { EASE_LUX, useRevealVariants } from '../lib/motion'
+import { SectionFrame } from './SectionFrame'
+import { SectionHeader } from './SectionHeader'
 
 const icons: Record<ProgramIcon, LucideIcon> = {
-  arrival: GlassWater,
+  arrival: Users,
   ceremony: Heart,
-  katb: ScrollText,
-  cocktail: Martini,
+  katb: Heart,
+  cocktail: Wine,
   dinner: UtensilsCrossed,
-  dance: Music,
+  dance: Music2,
   party: PartyPopper,
-  end: Moon,
+  end: Sparkles,
 }
 
 export function Program() {
+  const reduce = useReducedMotion()
   const { program } = invitation
+  const row = useRevealVariants()
+  // the pill lands with a tiny bounce, just after its row
+  const pill: Variants = reduce
+    ? {}
+    : {
+        hidden: { scale: 0.85 },
+        show: { scale: [0.85, 1.08, 1], transition: { duration: 0.6, delay: 0.25, ease: EASE_LUX } },
+      }
 
   return (
-    <section aria-labelledby="program-title" className="bg-blush/50 px-6 py-16">
-      <SectionHeading id="program-title" title={program.title} subtitle={program.subtitle} />
+    <SectionFrame labelledBy="program-title">
+      <SectionHeader id="program-title" title={program.title} subtitle={program.subtitle} />
 
-      <ol className="relative space-y-7">
-        {/* dotted connector behind the icons */}
-        <span
-          className="absolute top-7 bottom-7 left-7 border-l border-dashed border-terracotta/40"
-          aria-hidden="true"
-        />
-        {program.events.map((event, i) => {
+      <motion.ol
+        className="relative mx-auto max-w-xs space-y-6"
+        initial="hidden"
+        whileInView="show"
+        viewport={{ once: true, amount: 0.2 }}
+        variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
+      >
+        {/* faint dotted line connecting the icons */}
+        <span className="absolute top-5 bottom-5 left-[18px] border-l border-dotted border-gold/60" aria-hidden="true" />
+        {program.events.map((event) => {
           const Icon = icons[event.icon]
           return (
-            <li key={event.name}>
-              <Reveal delay={i * 0.04} className="relative flex items-center gap-5">
-                <span className="grid size-14 shrink-0 place-items-center rounded-full border border-terracotta/40 bg-cream text-terracotta shadow-soft">
-                  <Icon className="size-6" strokeWidth={1.25} aria-hidden="true" />
-                </span>
-                <div>
-                  <span className="inline-block rounded-full bg-terracotta px-3 py-0.5 font-sans text-[0.68rem] font-medium tracking-widest text-white">
-                    <time>{event.time}</time>
-                  </span>
-                  <h3 className="mt-1 font-serif text-2xl leading-tight">{event.name}</h3>
-                  {event.subtitle && <p className="font-sans text-xs font-light text-muted">{event.subtitle}</p>}
-                </div>
-              </Reveal>
-            </li>
+            <motion.li key={event.name} variants={row} className="relative flex items-start gap-4">
+              <span className="grid size-9 shrink-0 place-items-center rounded-full bg-sage/20 text-olive ring-1 ring-gold/40 outline-4 outline-cream">
+                <Icon className="size-[18px]" strokeWidth={1.4} aria-hidden="true" />
+              </span>
+              <div className="pt-0.5">
+                <motion.span
+                  variants={pill}
+                  className="inline-block rounded-full bg-olive px-3 py-0.5 font-sans text-[0.62rem] font-medium tracking-widest text-cream"
+                >
+                  <time>{event.time}</time>
+                </motion.span>
+                <h3 className="mt-1 font-serif text-2xl leading-tight">{event.name}</h3>
+                {event.subtitle && <p className="font-sans text-xs font-light text-muted">{event.subtitle}</p>}
+              </div>
+            </motion.li>
           )
         })}
-      </ol>
-    </section>
+      </motion.ol>
+    </SectionFrame>
   )
 }

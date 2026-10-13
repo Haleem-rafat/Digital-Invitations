@@ -1,6 +1,6 @@
 import { motion, type MotionValue } from 'framer-motion'
-import { useEffect, useId, useState } from 'react'
-import { FLORAL_TILE, floralTilePaths } from './geometry'
+import { useEffect, useState } from 'react'
+import { BOTANICAL_TILE, botanicalTilePaths } from './geometry'
 
 const svgUri = (svg: string) => `url("data:image/svg+xml,${encodeURIComponent(svg)}")`
 
@@ -37,38 +37,28 @@ function useImageExists(src: string | undefined) {
 }
 
 /**
- * Raised floral pattern: the line art is never drawn, only its lighting —
- * blur → diffuse light from the top-left → remapped so flat paper is 50% grey,
- * then blended with soft-light. Petals get a light top-left edge and a dark bottom-right edge.
+ * Printed botanical engraving (toile-style), drawn as fine ink lines on the paper.
+ * Built as a cached SVG background tile so the flap can rotate in 3D cheaply. The pattern is rotated by
+ * atan(1/4) ≈ 14°: at that angle the rotated lattice repeats on an axis-aligned square of side T·√17,
+ * so the tile is seamless and doesn't read as a grid.
  */
-function EmbossedFloral() {
-  const id = useId().replace(/[^a-zA-Z0-9_-]/g, '')
-  return (
-    <svg className="absolute inset-0 size-full mix-blend-soft-light" aria-hidden="true">
-      <defs>
-        <pattern id={`${id}t`} width={FLORAL_TILE} height={FLORAL_TILE} patternUnits="userSpaceOnUse">
-          <g fill="none" stroke="#000" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-            {floralTilePaths.map((d, i) => (
-              <path key={i} d={d} />
-            ))}
-          </g>
-        </pattern>
-        <filter id={`${id}f`} x="0" y="0" width="100%" height="100%" colorInterpolationFilters="sRGB">
-          <feGaussianBlur in="SourceAlpha" stdDeviation="1.2" result="bump" />
-          <feDiffuseLighting in="bump" surfaceScale="3" diffuseConstant="1" lightingColor="#fff" result="light">
-            <feDistantLight azimuth="225" elevation="45" />
-          </feDiffuseLighting>
-          {/* flat surface = sin(45°) ≈ .707 → map to .5 so soft-light leaves it untouched */}
-          <feComponentTransfer in="light">
-            <feFuncR type="linear" slope="0.7071" />
-            <feFuncG type="linear" slope="0.7071" />
-            <feFuncB type="linear" slope="0.7071" />
-          </feComponentTransfer>
-        </filter>
-      </defs>
-      <rect width="100%" height="100%" fill={`url(#${id}t)`} filter={`url(#${id}f)`} />
-    </svg>
+const PRINT_TILE = BOTANICAL_TILE * Math.sqrt(17)
+const printCache = new Map<string, string>()
+function botanicalPrint(ink: string) {
+  const cached = printCache.get(ink)
+  if (cached) return cached
+  const T = BOTANICAL_TILE
+  const S = PRINT_TILE
+  const angle = (-Math.atan(1 / 4) * 180) / Math.PI
+  const art = botanicalTilePaths.map((d) => `<path d="${d}"/>`).join('')
+  const uri = svgUri(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${S}" height="${S}" viewBox="0 0 ${S} ${S}">` +
+      `<defs><pattern id="p" width="${T}" height="${T}" patternUnits="userSpaceOnUse" patternTransform="rotate(${angle})">` +
+      `<g fill="none" stroke="${ink}" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round">${art}</g></pattern></defs>` +
+      `<rect width="${S}" height="${S}" fill="url(#p)"/></svg>`,
   )
+  printCache.set(ink, uri)
+  return uri
 }
 
 interface PaperProps {
@@ -76,35 +66,47 @@ interface PaperProps {
   /** Moves the soft daylight gradient opposite to the tilt */
   lightX?: MotionValue<number>
   lightY?: MotionValue<number>
-  emboss?: boolean
-  /** Optional raster emboss; when the file exists it replaces the SVG relief (soft-light) */
-  embossImage?: string
+  /** Ink colour of the printed botanical pattern; omit for plain paper */
+  ink?: string
+  /** Optional raster pattern; when the file exists it replaces the SVG print */
+  patternImage?: string
   vignette?: boolean
+  /** Fades the pattern in an elliptical panel (CSS position, e.g. '50% 62%') so text stays clear */
+  clearAt?: string
 }
 
-/** Layered paper: base colour, top-left daylight, vignette, grain, fibres, emboss. */
-export function Paper({ color, lightX, lightY, emboss = true, embossImage, vignette = true }: PaperProps) {
-  const hasImage = useImageExists(emboss ? embossImage : undefined)
+/** Layered paper: base colour, printed botanical pattern, grain, fibres, top-left daylight, vignette. */
+export function Paper({ color, lightX, lightY, ink, patternImage, vignette = true, clearAt }: PaperProps) {
+  const clearMask = clearAt
+    ? `radial-gradient(ellipse 66% 14% at ${clearAt}, rgba(0,0,0,.12) 40%, #000 100%)`
+    : undefined
+  const patternMask = { maskImage: clearMask, WebkitMaskImage: clearMask }
+
+  const hasImage = useImageExists(ink ? patternImage : undefined)
 
   return (
     <div className="absolute inset-0 overflow-hidden" style={{ backgroundColor: color }} aria-hidden="true">
+      {ink &&
+        (hasImage ? (
+          <div
+            className="absolute inset-0"
+            style={{ backgroundImage: `url("${patternImage}")`, backgroundSize: '360px', ...patternMask }}
+          />
+        ) : (
+          <div
+            className="absolute inset-0 opacity-80"
+            style={{ backgroundImage: botanicalPrint(ink), backgroundSize: `${PRINT_TILE * 0.62}px`, ...patternMask }}
+          />
+        ))}
+      {/* paper grain + cotton fibres over the ink, like ink printed into textured stock */}
       <div
-        className="absolute inset-0 opacity-[0.09] mix-blend-multiply"
+        className="absolute inset-0 opacity-[0.12] mix-blend-multiply"
         style={{ backgroundImage: GRAIN, backgroundSize: '256px' }}
       />
       <div
-        className="absolute inset-0 opacity-[0.04] mix-blend-multiply"
+        className="absolute inset-0 opacity-[0.06] mix-blend-multiply"
         style={{ backgroundImage: FIBRES, backgroundSize: '512px' }}
       />
-      {emboss &&
-        (hasImage ? (
-          <div
-            className="absolute inset-0 mix-blend-soft-light"
-            style={{ backgroundImage: `url("${embossImage}")`, backgroundSize: '240px' }}
-          />
-        ) : (
-          <EmbossedFloral />
-        ))}
       {/* soft daylight from the top-left; oversized so it can drift with the tilt */}
       <motion.div
         className="absolute -inset-[20%] will-change-transform"

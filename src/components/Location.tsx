@@ -1,43 +1,41 @@
-import { MapPin, Navigation } from 'lucide-react'
+import { MapPin } from 'lucide-react'
 import { invitation } from '../data/invitation'
-import { Reveal } from './Reveal'
-import { SectionHeading } from './SectionHeading'
+import { Item, Stagger } from '../lib/motion'
+import { SectionFrame } from './SectionFrame'
+import { SectionHeader } from './SectionHeader'
 
+/** Venue with an embedded map and the "View Location" button. */
 export function Location() {
-  const { venue } = invitation
+  const { location, venue, timeDisplay } = invitation
 
   return (
-    <section aria-labelledby="location-title" className="px-6 py-16">
-      <SectionHeading id="location-title" title="Location" subtitle="Where the magic happens" />
-
-      <Reveal className="overflow-hidden rounded-3xl bg-white/80 shadow-card ring-1 ring-blush">
-        <iframe
-          title={`Map showing ${venue.name}`}
-          src={venue.mapEmbedUrl}
-          className="h-60 w-full border-0 grayscale-[35%] sepia-[15%]"
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-        />
-        <div className="p-6 text-center">
-          <h3 className="font-serif text-2xl">{venue.name}</h3>
-          {venue.address && (
-            <p className="mt-1 flex items-start justify-center gap-1.5 font-sans text-xs font-light leading-relaxed text-muted">
-              <MapPin className="mt-0.5 size-3.5 shrink-0" strokeWidth={1.5} aria-hidden="true" />
-              {venue.address}
-            </p>
-          )}
-          <a
-            href={venue.directionsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-5 inline-flex items-center gap-2 rounded-full bg-terracotta px-6 py-3 font-sans text-xs font-medium tracking-[0.2em] text-white uppercase shadow-soft transition hover:bg-terracotta-dark active:scale-[0.98]"
-          >
-            <Navigation className="size-4" strokeWidth={1.5} aria-hidden="true" />
-            Get directions
-            <span className="sr-only">(opens in a new tab)</span>
+    <SectionFrame labelledBy="location-title">
+      <SectionHeader id="location-title" label={location.label} title={location.title} subtitle={`${venue.name} · ${timeDisplay}`} />
+      <Stagger className="text-center">
+        <Item>
+          <div className="overflow-hidden rounded-[20px] border border-gold/60 bg-page p-1.5 shadow-soft">
+            <iframe
+              title={`Map showing ${venue.name}`}
+              src={venue.mapEmbedUrl}
+              className="h-64 w-full rounded-[15px] border-0 grayscale-[25%] sepia-[12%]"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+        </Item>
+        {venue.address && (
+          <Item as="p" className="mt-4 font-serif text-lg text-muted">
+            {venue.address}
+          </Item>
+        )}
+        <Item className="mt-7">
+          <a href={venue.directionsUrl} target="_blank" rel="noopener noreferrer" className="btn-pill w-56">
+            <MapPin className="size-3.5" strokeWidth={1.6} aria-hidden="true" />
+            View Location
+            <span className="sr-only">(opens Google Maps in a new tab)</span>
           </a>
-        </div>
-      </Reveal>
-    </section>
+        </Item>
+      </Stagger>
+    </SectionFrame>
   )
 }

@@ -1,23 +1,26 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-cream: #fbf6f1;
-  --color-blush: #f4e4dc;
-  --color-terracotta: #e07b4f;
-  --color-terracotta-dark: #c9653b;
-  --color-sage: #a8b89a;
-  --color-sage-dark: #8a9c7c;
+  /* Page palette — runtime values come from invitation.theme (see App.tsx) */
+  --color-page: #f3f3f1;
+  --color-cream: #faf7f0;
+  --color-olive: #7a8450;
+  --color-olive-dark: #646d40;
+  --color-sage: #a3ad85;
+  --color-blush: #e8c9c1;
+  --color-rose: #d4a5a0;
+  --color-gold: #c2a36b;
+  --color-ink: #2f2f2f;
+  --color-muted: #77746d;
   --color-wine: #8b1e2b;
-  --color-ink: #4a3f3a;
-  --color-muted: #9c8f88;
 
   --font-script: 'Great Vibes', cursive;
   --font-pinyon: 'Pinyon Script', cursive;
   --font-serif: 'Cormorant Garamond', Georgia, serif;
   --font-sans: 'Montserrat', system-ui, sans-serif;
 
-  --shadow-soft: 0 10px 30px -12px rgb(74 63 58 / 0.18);
-  --shadow-card: 0 20px 50px -20px rgb(74 63 58 / 0.3);
+  --shadow-soft: 0 10px 30px -12px rgb(47 47 47 / 0.14);
+  --shadow-card: 0 20px 50px -20px rgb(47 47 47 / 0.22);
 }
 
 @layer base {
@@ -27,15 +30,18 @@
   }
 
   body {
-    @apply bg-cream text-ink font-serif antialiased;
-    /* Subtle linen texture: fine cross-hatch of two semi-transparent gradients */
+    @apply text-ink font-serif antialiased;
+    /* Soft light-grey paper: fine grain + faint linen weave — never pure white */
+    background-color: var(--color-page);
     background-image:
-      repeating-linear-gradient(0deg, rgb(74 63 58 / 0.018) 0 1px, transparent 1px 3px),
-      repeating-linear-gradient(90deg, rgb(74 63 58 / 0.018) 0 1px, transparent 1px 3px);
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .3 0 0 0 0 .3 0 0 0 0 .27 0 0 0 .07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+      repeating-linear-gradient(0deg, rgb(47 47 47 / 0.014) 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(90deg, rgb(47 47 47 / 0.014) 0 1px, transparent 1px 3px);
+    background-size: 220px, auto, auto;
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-terracotta);
+    outline: 2px solid var(--color-olive);
     outline-offset: 3px;
   }
 
@@ -51,7 +57,35 @@
 }
 
 @utility section-title {
-  @apply font-script text-5xl leading-tight text-ink;
+  @apply font-serif text-[2.4rem] leading-tight font-light text-ink;
+}
+
+/* Cream pill for dark (olive) backgrounds */
+@utility btn-pill-light {
+  @apply btn-pill bg-cream text-olive;
+  box-shadow: 0 8px 20px -10px rgb(20 24 10 / 0.5);
+  &:hover,
+  &:active,
+  &[aria-expanded='true'] {
+    background-color: #fff;
+    box-shadow: 0 0 0 6px rgb(250 247 240 / 0.18), 0 10px 28px -8px rgb(20 24 10 / 0.55);
+  }
+}
+
+/* Olive pill button with cream text and a gentle glow on hover/tap */
+@utility btn-pill {
+  @apply inline-flex items-center justify-center gap-2 rounded-full bg-olive px-5 py-3 font-sans text-[0.62rem] font-medium tracking-[0.22em] text-cream uppercase;
+  box-shadow: 0 8px 20px -10px rgb(122 132 80 / 0.7);
+  transition: box-shadow 0.4s ease, transform 0.2s ease, background-color 0.4s ease;
+  &:hover,
+  &:active,
+  &[aria-expanded='true'] {
+    background-color: var(--color-olive-dark);
+    box-shadow: 0 0 0 6px rgb(122 132 80 / 0.14), 0 10px 28px -8px rgb(122 132 80 / 0.75);
+  }
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 /* ---------- Envelope intro: ambient motion (transform/opacity only, except the foil text) ---------- */
@@ -61,7 +95,8 @@
   background-clip: text;
   color: transparent;
   background-size: 260% 100%;
-  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.35)) drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.25));
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.35)) drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.3))
+    drop-shadow(0 2px 6px rgba(40, 50, 30, 0.3));
   animation: foil-shimmer 7s ease-in-out infinite alternate;
 }
 @keyframes foil-shimmer {
@@ -112,4 +147,62 @@
 @media (prefers-reduced-motion: reduce) {
   .foil-text, .seal-shine, .gold-dust, .light-flare { animation: none; }
   .gold-dust { opacity: 0.4; }
+}
+
+/* ---------- Page: ambient motion ---------- */
+
+/* Ken Burns on the hero scene */
+.ken-burns {
+  will-change: transform;
+  animation: ken-burns 20s ease-in-out infinite alternate;
+}
+@keyframes ken-burns {
+  from { transform: scale(1); }
+  to { transform: scale(1.06); }
+}
+
+/* soft bouncing chevron scroll hint */
+.bounce-soft {
+  animation: bounce-soft 1.8s ease-in-out infinite;
+}
+@keyframes bounce-soft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* leaves sway slightly, pivoting from their corner */
+.sway {
+  will-change: transform;
+  animation: sway 7s ease-in-out infinite alternate;
+}
+@keyframes sway {
+  from { transform: rotate(-1.2deg); }
+  to { transform: rotate(1.4deg); }
+}
+
+/* slow, sparse falling petals */
+.petal {
+  position: absolute;
+  top: -6vh;
+  will-change: transform, opacity;
+  animation: petal-fall var(--dur) linear var(--delay) infinite;
+}
+.petal > span {
+  display: block;
+  animation: petal-sway calc(var(--dur) / 4) ease-in-out infinite alternate;
+}
+@keyframes petal-fall {
+  0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
+  8% { opacity: var(--o); }
+  90% { opacity: var(--o); }
+  100% { transform: translate3d(var(--drift), 112vh, 0) rotate(var(--spin)); opacity: 0; }
+}
+@keyframes petal-sway {
+  from { transform: translateX(-14px) rotate(-12deg); }
+  to { transform: translateX(14px) rotate(14deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ken-burns, .bounce-soft, .sway { animation: none; }
+  .petal { display: none; }
 }
