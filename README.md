@@ -16,6 +16,14 @@ npm run build    # static output in dist/
 4. "Add to Calendar" uses `dateISO` + `calendar` (title, duration, location) — offers an .ics file (Apple/Outlook) and a Google Calendar link.
 5. Personalise links with `?guest=Name` → the envelope shows "Dear Name,".
 
+### Sharing the link
+- Title, description and preview image come from `share` in the config (`public/share/preview.jpg`, 1200×630, and `icon.png`).
+- **After deploying, set `share.siteUrl`** (e.g. `https://mohamed-mai.vercel.app`) and rebuild — WhatsApp and Facebook only show the preview image with a full address.
+- WhatsApp caches previews; if you change the image, share the link with a new query (e.g. `?v=2`) to refresh it.
+
+### Opening sound
+`envelope.openSound`: `'envelope'` (paper envelope opening, default), `'chime'`, `'seal'`, `'paper'`, `'none'`, or a file like `'/audio/open.mp3'`. Preview with `?sound=chime`.
+
 ### Map
 In Google Maps: *Share → Embed a map*, copy the `src` URL into `venue.mapEmbedUrl`. `venue.directionsUrl` can be any Maps link.
 
