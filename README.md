@@ -19,7 +19,6 @@ npm run build    # static output in dist/
 ### Sharing the link
 - Title, description and preview image come from `share` in the config (`public/share/preview.jpg`, 1200×630, and `icon.png`).
 - **After deploying, set `share.siteUrl`** (e.g. `https://mohamed-mai.vercel.app`) and rebuild — WhatsApp and Facebook only show the preview image with a full address.
-- WhatsApp caches previews; if you change the image, share the link with a new query (e.g. `?v=2`) to refresh it.
 
 ### Opening sound
 `envelope.openSound`: `'envelope'` (paper envelope opening, default), `'chime'`, `'seal'`, `'paper'`, `'none'`, or a file like `'/audio/open.mp3'`. Preview with `?sound=chime`.

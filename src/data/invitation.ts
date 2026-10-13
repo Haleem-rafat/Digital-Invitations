@@ -13,9 +13,10 @@ export type ProgramIcon =
   | 'party'
   | 'end'
 
-import type { OpenSound } from '../components/intro/openSound'
-
 export type HeroVariant = 'olive' | 'light'
+
+/** Opening sound: a built-in sound or a path to an audio file in /public. See components/intro/openSound.ts */
+export type OpenSound = 'envelope' | 'chime' | 'seal' | 'paper' | 'none' | (string & {})
 
 export interface InvitationConfig {
   couple: {
@@ -65,7 +66,7 @@ export interface InvitationConfig {
       ink: string
       /** Gold-foil gradient stops for "You're invited" (115deg) */
       foil: string[]
-      /** Small gold names/date line */
+      /** Couple's names and date on the card (light gold) */
       gold: string
     }
   }
@@ -148,10 +149,11 @@ export interface InvitationConfig {
     image: string
     imageAlt: string
     /**
-     * Full site address once deployed, e.g. 'https://mohamed-mai.vercel.app'.
-     * WhatsApp/Facebook need it to show the preview image.
+     * Full site address, e.g. 'https://mohamed-mai.vercel.app'. Platforms only show the preview
+     * image from a full URL. If empty, the build uses SITE_URL or Vercel's production domain.
      */
     siteUrl: string
+    siteName: string
   }
   music: {
     src: string
@@ -192,8 +194,8 @@ export const invitation: InvitationConfig = {
       wax: '#DDA699',
       monogram: '#C2A36B',
       ink: '#3F4A37',
-      foil: ['#6E5020 0%', '#D9B766 30%', '#9C7632 50%', '#EBD08A 65%', '#6E5020 100%'],
-      gold: '#6E5020',
+      foil: ['#C9A862 0%', '#FFF0C4 30%', '#E2C27E 50%', '#FFF6D8 65%', '#C9A862 100%'],
+      gold: '#FBEBC0',
     },
   },
   theme: {
@@ -206,11 +208,11 @@ export const invitation: InvitationConfig = {
     rose: '#D4A5A0',
     gold: '#C2A36B',
     ink: '#2F2F2F',
-    muted: '#77746D',
+    muted: '#5C5A53',
   },
   hero: {
     label: "We're getting married",
-    variant: 'olive',
+    variant: 'light',
     images: {
       olive: '/images/hero-olive.svg',
       light: '/images/hero-light.svg',
@@ -279,7 +281,8 @@ export const invitation: InvitationConfig = {
     description: 'Join us to celebrate our wedding · Friday, 11 December 2026 · 5:00 PM',
     image: '/share/preview.jpg',
     imageAlt: 'A sage envelope with a pink wax seal — Mohamed & Mai, 11.12.2026',
-    siteUrl: '',
+    siteUrl: 'https://digital-invitations-teal.vercel.app',
+    siteName: 'Mohamed & Mai · Wedding',
   },
   music: {
     src: '/audio/music.mp3',

@@ -36,7 +36,7 @@ export function SectionHeader({ id, title, label, subtitle, script }: SectionHea
         <span className="h-px flex-1 bg-gold/70" />
       </Item>
       {subtitle && (
-        <Item as="p" className="mt-4 font-sans text-[0.7rem] font-light tracking-[0.2em] text-muted uppercase">
+        <Item as="p" className="mt-4 font-sans text-[0.8rem] font-medium tracking-[0.16em] text-muted uppercase">
           {subtitle}
         </Item>
       )}

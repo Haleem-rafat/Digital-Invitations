@@ -21,7 +21,7 @@ const LOOKS: Record<HeroVariant, { img: string; wash: string; inset: string; lab
     img: 'opacity-80',
     wash: 'from-page/95 via-page/60 via-55% to-page/10',
     inset: 'inset 0 10px 26px rgb(47 47 47 / 0.08)',
-    label: 'text-ink/75',
+    label: 'text-ink/85',
     names: 'text-olive',
     amp: 'text-gold',
     date: 'text-ink',
@@ -98,7 +98,7 @@ export function Hero({ play }: { play: boolean }) {
       </div>
 
       <div className="relative flex h-full flex-col items-center justify-center px-8 pb-[14svh] text-center">
-        <motion.p {...reveal(at.label)} className={`font-sans text-xs font-normal tracking-[0.35em] uppercase ${look.label}`}>
+        <motion.p {...reveal(at.label)} className={`font-sans text-sm font-semibold tracking-[0.3em] uppercase ${look.label}`}>
           {hero.label}
         </motion.p>
 
@@ -120,8 +120,8 @@ export function Hero({ play }: { play: boolean }) {
             <span className="size-1.5 rotate-45 border border-gold" />
             <span className="h-px flex-1 bg-gold" />
           </div>
-          <p className="font-serif text-[1.65rem] font-medium tracking-wide">{dateDisplay}</p>
-          <p className="mt-1 font-sans text-sm font-normal tracking-[0.3em] uppercase">{timeDisplay}</p>
+          <p className="font-serif text-[1.85rem] font-semibold tracking-wide">{dateDisplay}</p>
+          <p className="mt-1 font-sans text-base font-semibold tracking-[0.25em] uppercase">{timeDisplay}</p>
         </motion.div>
 
         <motion.a
@@ -129,7 +129,7 @@ export function Hero({ play }: { play: boolean }) {
           href="#story"
           className={`absolute bottom-[max(1.25rem,env(safe-area-inset-bottom))] flex flex-col items-center gap-1 ${look.hint}`}
         >
-          <span className="font-serif text-lg italic">{hero.scrollHint}</span>
+          <span className="font-serif text-xl font-medium italic">{hero.scrollHint}</span>
           <ChevronDown className="bounce-soft size-5" strokeWidth={1.25} aria-hidden="true" />
         </motion.a>
       </div>

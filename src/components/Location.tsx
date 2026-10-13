@@ -24,7 +24,7 @@ export function Location() {
           </div>
         </Item>
         {venue.address && (
-          <Item as="p" className="mt-4 font-serif text-lg text-muted">
+          <Item as="p" className="mt-4 font-serif text-xl font-medium text-muted">
             {venue.address}
           </Item>
         )}

@@ -66,9 +66,9 @@ export function LoveStory() {
           <li key={item.year + item.title} className="relative pb-12 pl-8 last:pb-0">
             <Dot />
             <motion.div initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.3 }} variants={itemVariants}>
-              <p className="font-sans text-[0.65rem] font-light tracking-[0.25em] text-olive uppercase">{item.year}</p>
-              <h3 className="mt-1 font-serif text-[1.7rem] leading-tight">{item.title}</h3>
-              <p className="mt-1 font-serif text-lg leading-snug text-muted">{item.text}</p>
+              <p className="font-sans text-[0.78rem] font-semibold tracking-[0.18em] text-olive uppercase">{item.year}</p>
+              <h3 className="mt-1 font-serif text-[1.9rem] font-semibold leading-tight">{item.title}</h3>
+              <p className="mt-1.5 font-serif text-xl font-medium leading-snug text-muted">{item.text}</p>
             </motion.div>
           </li>
         ))}

@@ -49,23 +49,23 @@ export function Program() {
         variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
       >
         {/* faint dotted line connecting the icons */}
-        <span className="absolute top-5 bottom-5 left-[18px] border-l border-dotted border-gold/60" aria-hidden="true" />
+        <span className="absolute top-5 bottom-5 left-[20px] border-l border-dotted border-gold/60" aria-hidden="true" />
         {program.events.map((event) => {
           const Icon = icons[event.icon]
           return (
             <motion.li key={event.name} variants={row} className="relative flex items-start gap-4">
-              <span className="grid size-9 shrink-0 place-items-center rounded-full bg-sage/20 text-olive ring-1 ring-gold/40 outline-4 outline-cream">
-                <Icon className="size-[18px]" strokeWidth={1.4} aria-hidden="true" />
+              <span className="grid size-10 shrink-0 place-items-center rounded-full bg-sage/20 text-olive ring-1 ring-gold/40 outline-4 outline-cream">
+                <Icon className="size-5" strokeWidth={1.6} aria-hidden="true" />
               </span>
               <div className="pt-0.5">
                 <motion.span
                   variants={pill}
-                  className="inline-block rounded-full bg-olive px-3 py-0.5 font-sans text-[0.62rem] font-medium tracking-widest text-cream"
+                  className="inline-block rounded-full bg-olive px-3.5 py-1 font-sans text-[0.75rem] font-semibold tracking-wider text-cream"
                 >
                   <time>{event.time}</time>
                 </motion.span>
-                <h3 className="mt-1 font-serif text-2xl leading-tight">{event.name}</h3>
-                {event.subtitle && <p className="font-sans text-xs font-light text-muted">{event.subtitle}</p>}
+                <h3 className="mt-1.5 font-serif text-[1.65rem] font-semibold leading-tight">{event.name}</h3>
+                {event.subtitle && <p className="font-sans text-sm font-medium text-muted">{event.subtitle}</p>}
               </div>
             </motion.li>
           )

@@ -11,15 +11,18 @@ import { invitation } from '../../data/invitation'
 import { FallingPetals } from '../florals/Florals'
 import { DECKLE, deckleMaskSvg } from './geometry'
 import { Paper } from './Paper'
-import { playOpenSound, type OpenSound } from './openSound'
+import type { OpenSound } from '../../data/invitation'
+import { playOpenSound } from './openSound'
 import { EASE, FLAP_OPEN_ANGLE, TIMELINE } from './timeline'
 import { useTilt } from './useTilt'
 import { WaxSeal } from './WaxSeal'
 
 const TRIANGLE = 'polygon(0 0, 100% 0, 50% 100%)'
-// The flap starts 4% above the screen (like the card) so tilting never reveals its hinge; tip stays at 38%.
+// Where the flap's tip (and the seal) sits, as % of screen height — deep enough to read as a real envelope on tall phones.
+const FLAP_TIP = 46
+// The flap starts 4% above the screen (like the card) so tilting never reveals its hinge.
 const FLAP_OVERHANG = 4
-const FLAP_HEIGHT = `${38 + FLAP_OVERHANG}%`
+const FLAP_HEIGHT = `${FLAP_TIP + FLAP_OVERHANG}%`
 
 /** Opening sound from the config, overridable with ?sound=chime|seal|paper|none to preview. */
 function openSound(): OpenSound {
@@ -172,7 +175,7 @@ export function EnvelopeIntro({ guestName, onTap, onOpened }: EnvelopeIntroProps
             lightY={tilt.lightY}
             ink={colors.pattern}
             patternImage={envelope.patternImage}
-            clearAt="50% 63%"
+            clearAt="50% 74%"
           />
 
           {/* soft floating light flare */}
@@ -206,10 +209,11 @@ export function EnvelopeIntro({ guestName, onTap, onOpened }: EnvelopeIntroProps
             />
           ))}
 
-          <div className="absolute inset-x-0 top-[55%] px-6 text-center">
+          {/* text sits just below the seal (seal centre = flap tip; half the seal ≈ 78px) */}
+          <div className="absolute inset-x-0 px-6 text-center" style={{ top: `calc(${FLAP_TIP + 4}% + 84px)` }}>
             {guestName && (
               <motion.p
-                className="mb-1 font-serif text-[1.7rem] font-medium italic"
+                className="mb-1 font-serif text-[clamp(1.5rem,3.4svh,1.8rem)] font-semibold italic"
                 style={{ color: colors.ink, textShadow: '0 1px 0 rgba(255,255,255,.3)' }}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -219,7 +223,7 @@ export function EnvelopeIntro({ guestName, onTap, onOpened }: EnvelopeIntroProps
               </motion.p>
             )}
             <motion.h1
-              className="foil-text inline-block px-3 font-pinyon text-[clamp(3.8rem,17vw,5rem)] leading-[1.35]"
+              className="foil-text inline-block px-3 font-pinyon text-[clamp(3.2rem,min(17vw,8.6svh),5rem)] leading-[1.3]"
               style={{ backgroundImage: `linear-gradient(115deg, ${colors.foil.join(', ')})` }}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -227,22 +231,34 @@ export function EnvelopeIntro({ guestName, onTap, onOpened }: EnvelopeIntroProps
             >
               {envelope.title}
             </motion.h1>
+            {/* couple's names in the same script as the hero, light gold */}
             <motion.p
-              className="mt-1 font-sans text-[0.74rem] font-semibold tracking-[0.3em] uppercase"
-              style={{ color: colors.gold, textShadow: '0 1px 0 rgba(255,255,255,.35), 0 0 12px rgba(255,255,255,.25)' }}
+              className="-mt-1 font-script text-[clamp(2rem,9.5vw,2.5rem)] leading-tight"
+              style={{ color: colors.gold, textShadow: '0 1px 1px rgba(40,45,20,.55), 0 2px 10px rgba(40,45,20,.35)' }}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.9, ease: EASE.out }}
+            >
+              {couple.partner1}
+              <span className="mx-2.5">&amp;</span>
+              {couple.partner2}
+            </motion.p>
+            <motion.p
+              className="mt-1 font-sans text-[0.85rem] font-semibold tracking-[0.3em]"
+              style={{ color: colors.gold, textShadow: '0 1px 1px rgba(40,45,20,.6), 0 0 8px rgba(40,45,20,.3)' }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.9, duration: 0.9, ease: 'easeInOut' }}
+              transition={{ delay: 1, duration: 0.9, ease: 'easeInOut' }}
             >
-              {couple.partner1} &amp; {couple.partner2} · {dateShort}
+              {dateShort}
             </motion.p>
           </div>
 
           <motion.p
-            className="absolute inset-x-0 bottom-[max(3rem,calc(env(safe-area-inset-bottom)+1.5rem))] text-center font-sans text-[0.68rem] font-normal tracking-[0.3em] uppercase"
+            className="absolute inset-x-0 bottom-[max(3rem,calc(env(safe-area-inset-bottom)+1.5rem))] text-center font-sans text-[0.8rem] font-semibold tracking-[0.25em] uppercase"
             style={{ color: colors.ink, textShadow: '0 1px 0 rgba(255,255,255,.3)' }}
             initial={{ opacity: 0 }}
-            animate={opening ? { opacity: 0 } : { opacity: [0.55, 1, 0.55] }}
+            animate={opening ? { opacity: 0 } : { opacity: [0.7, 1, 0.7] }}
             transition={
               opening
                 ? { duration: 0.25, ease: 'easeInOut' }
@@ -256,7 +272,7 @@ export function EnvelopeIntro({ guestName, onTap, onOpened }: EnvelopeIntroProps
 
         {/* Shadow cast by the lifting flap */}
         <motion.div
-          className="pointer-events-none absolute inset-x-0 top-0 h-[45%] bg-gradient-to-b from-black/45 to-transparent will-change-[opacity]"
+          className="pointer-events-none absolute inset-x-0 top-0 h-[54%] bg-gradient-to-b from-black/45 to-transparent will-change-[opacity]"
           style={{ opacity: shadowOpacity }}
           aria-hidden="true"
         />
@@ -278,8 +294,8 @@ export function EnvelopeIntro({ guestName, onTap, onOpened }: EnvelopeIntroProps
                 vignette={false}
               />
               {/* fold crease where the flap hinges */}
-              <div className="absolute inset-x-0 h-px bg-black/10" style={{ top: `calc(${(FLAP_OVERHANG / 42) * 100}% + 8px)` }} />
-              <div className="absolute inset-x-0 h-px bg-white/25" style={{ top: `calc(${(FLAP_OVERHANG / 42) * 100}% + 9px)` }} />
+              <div className="absolute inset-x-0 h-px bg-black/10" style={{ top: `calc(${(FLAP_OVERHANG / (FLAP_TIP + FLAP_OVERHANG)) * 100}% + 8px)` }} />
+              <div className="absolute inset-x-0 h-px bg-white/25" style={{ top: `calc(${(FLAP_OVERHANG / (FLAP_TIP + FLAP_OVERHANG)) * 100}% + 9px)` }} />
             </div>
             <svg className="absolute inset-0 size-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
               <path

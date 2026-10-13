@@ -11,7 +11,7 @@
   --color-rose: #d4a5a0;
   --color-gold: #c2a36b;
   --color-ink: #2f2f2f;
-  --color-muted: #77746d;
+  --color-muted: #5c5a53;
   --color-wine: #8b1e2b;
 
   --font-script: 'Great Vibes', cursive;
@@ -53,11 +53,11 @@
 }
 
 @utility label {
-  @apply font-sans text-[0.68rem] font-light tracking-[0.3em] uppercase text-muted;
+  @apply font-sans text-[0.78rem] font-medium tracking-[0.25em] uppercase text-muted;
 }
 
 @utility section-title {
-  @apply font-serif text-[2.4rem] leading-tight font-light text-ink;
+  @apply font-serif text-[2.6rem] leading-tight font-medium text-ink;
 }
 
 /* Cream pill for dark (olive) backgrounds */
@@ -74,7 +74,7 @@
 
 /* Olive pill button with cream text and a gentle glow on hover/tap */
 @utility btn-pill {
-  @apply inline-flex items-center justify-center gap-2 rounded-full bg-olive px-5 py-3 font-sans text-[0.62rem] font-medium tracking-[0.22em] text-cream uppercase;
+  @apply inline-flex items-center justify-center gap-2 rounded-full bg-olive px-6 py-3.5 font-sans text-[0.75rem] font-semibold tracking-[0.18em] text-cream uppercase;
   box-shadow: 0 8px 20px -10px rgb(122 132 80 / 0.7);
   transition: box-shadow 0.4s ease, transform 0.2s ease, background-color 0.4s ease;
   &:hover,
@@ -95,8 +95,8 @@
   background-clip: text;
   color: transparent;
   background-size: 260% 100%;
-  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.35)) drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.3))
-    drop-shadow(0 2px 6px rgba(40, 50, 30, 0.3));
+  /* light gold foil: a dark lift underneath keeps it readable on the sage paper */
+  filter: drop-shadow(0 1px 1px rgba(40, 45, 20, 0.55)) drop-shadow(0 2px 10px rgba(40, 45, 20, 0.35));
   animation: foil-shimmer 7s ease-in-out infinite alternate;
 }
 @keyframes foil-shimmer {

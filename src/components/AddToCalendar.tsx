@@ -23,7 +23,7 @@ export function AddToCalendar({ variant = 'dark' }: { variant?: 'dark' | 'light'
   }, [open])
 
   const option =
-    'flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left font-sans text-[0.7rem] tracking-wider text-ink transition-colors hover:bg-blush/50'
+    'flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left font-sans text-[0.8rem] font-medium tracking-wide text-ink transition-colors hover:bg-blush/50'
 
   return (
     <div ref={ref} className="relative">

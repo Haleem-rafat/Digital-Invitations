@@ -9,7 +9,7 @@
  *  - 'none'   silent
  *  - '/audio/your-sound.mp3'  any file in /public
  */
-export type OpenSound = 'envelope' | 'chime' | 'seal' | 'paper' | 'none' | (string & {})
+import type { OpenSound } from '../../data/invitation'
 
 type Ctx = AudioContext
 

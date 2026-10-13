@@ -23,11 +23,13 @@ export function Footer() {
             <span className="size-1.5 rotate-45 border border-gold" />
             <span className="h-px flex-1 bg-gold/70" />
           </Item>
-          <Item as="p" className="mt-5 font-serif text-xl text-muted italic">
+          <Item as="p" className="mt-5 font-serif text-[1.35rem] font-medium text-muted italic">
             {footer.note}
           </Item>
           <Item as="p" className="mt-8 font-script text-[2.6rem] leading-tight whitespace-nowrap text-olive">
-            {couple.partner1} <span className="text-gold">&amp;</span> {couple.partner2}
+            {couple.partner1}
+            <span className="mx-3 text-gold">&amp;</span>
+            {couple.partner2}
           </Item>
           <Item as="p" className="label mt-3">
             {dateDisplay}
