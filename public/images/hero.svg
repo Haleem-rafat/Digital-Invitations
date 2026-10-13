@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 860" preserveAspectRatio="xMidYMid slice">
+  <!-- Placeholder illustration. Replace with your own image and update hero.image in src/data/invitation.ts -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FBEFE6"/>
+      <stop offset="0.55" stop-color="#F7D5C0"/>
+      <stop offset="1" stop-color="#F0B897"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFF4EA"/>
+      <stop offset="0.7" stop-color="#F9D8C1"/>
+      <stop offset="1" stop-color="#F9D8C1" stop-opacity="0"/>
+    </radialGradient>
+    <path id="frond" d="M0 0 C 40 -34 110 -38 170 -6 C 120 -18 60 -12 0 0 Z"/>
+    <path id="frond-l" d="M0 0 C -40 -34 -110 -38 -170 -6 C -120 -18 -60 -12 0 0 Z"/>
+    <path id="leaf" d="M0 0 C 18 -40 18 -90 0 -130 C -18 -90 -18 -40 0 0 Z"/>
+  </defs>
+
+  <rect width="600" height="860" fill="url(#sky)"/>
+  <circle cx="300" cy="520" r="210" fill="url(#sun)"/>
+  <circle cx="300" cy="540" r="92" fill="#F6C3A4" opacity="0.8"/>
+
+  <!-- distant hills -->
+  <path d="M0 620 C 90 560 170 580 260 600 C 360 622 440 560 600 590 L600 860 L0 860 Z" fill="#EBB08F"/>
+  <path d="M0 670 C 120 630 220 660 320 650 C 430 640 500 610 600 640 L600 860 L0 860 Z" fill="#E39B76"/>
+
+  <!-- left palm -->
+  <g>
+    <path d="M150 860 C 150 760 140 640 108 470" stroke="#B9683F" stroke-width="16" fill="none" stroke-linecap="round"/>
+    <path d="M150 860 C 150 760 140 640 108 470" stroke="#CF8159" stroke-width="16" stroke-dasharray="4 14" fill="none"/>
+    <g transform="translate(108 470)" fill="#C96F47">
+      <use href="#frond" transform="rotate(-8)"/>
+      <use href="#frond" transform="rotate(26)"/>
+      <use href="#frond" transform="rotate(58) scale(0.85)"/>
+      <use href="#frond-l" transform="rotate(10)"/>
+      <use href="#frond-l" transform="rotate(-24)"/>
+      <use href="#frond-l" transform="rotate(-56) scale(0.85)"/>
+    </g>
+    <g transform="translate(108 470)" fill="#DB8D63">
+      <use href="#frond" transform="rotate(-36) scale(0.9)"/>
+      <use href="#frond-l" transform="rotate(38) scale(0.9)"/>
+    </g>
+  </g>
+
+  <!-- right palm -->
+  <g>
+    <path d="M470 860 C 468 770 480 660 520 520" stroke="#B9683F" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <path d="M470 860 C 468 770 480 660 520 520" stroke="#CF8159" stroke-width="14" stroke-dasharray="4 12" fill="none"/>
+    <g transform="translate(520 520) scale(0.85)" fill="#C96F47">
+      <use href="#frond" transform="rotate(-6)"/>
+      <use href="#frond" transform="rotate(30)"/>
+      <use href="#frond-l" transform="rotate(14)"/>
+      <use href="#frond-l" transform="rotate(-22)"/>
+      <use href="#frond-l" transform="rotate(-52) scale(0.85)"/>
+    </g>
+    <g transform="translate(520 520) scale(0.85)" fill="#DB8D63">
+      <use href="#frond" transform="rotate(-34) scale(0.9)"/>
+      <use href="#frond-l" transform="rotate(44) scale(0.9)"/>
+    </g>
+  </g>
+
+  <!-- foreground plants -->
+  <g fill="#D4835A">
+    <use href="#leaf" transform="translate(40 860) rotate(-28)"/>
+    <use href="#leaf" transform="translate(60 860) rotate(-6) scale(1.2)"/>
+    <use href="#leaf" transform="translate(84 860) rotate(18)"/>
+    <use href="#leaf" transform="translate(540 860) rotate(24)"/>
+    <use href="#leaf" transform="translate(560 860) rotate(4) scale(1.15)"/>
+    <use href="#leaf" transform="translate(520 860) rotate(-16) scale(0.9)"/>
+  </g>
+  <g fill="#E8A27C">
+    <use href="#leaf" transform="translate(20 860) rotate(-48) scale(0.8)"/>
+    <use href="#leaf" transform="translate(110 860) rotate(36) scale(0.75)"/>
+    <use href="#leaf" transform="translate(580 860) rotate(44) scale(0.8)"/>
+    <use href="#leaf" transform="translate(495 860) rotate(-36) scale(0.7)"/>
+  </g>
+  <path d="M0 820 C 150 800 450 800 600 820 L600 860 L0 860 Z" fill="#DE9670"/>
+</svg>

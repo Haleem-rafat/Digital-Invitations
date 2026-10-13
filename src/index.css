@@ -1,0 +1,115 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-cream: #fbf6f1;
+  --color-blush: #f4e4dc;
+  --color-terracotta: #e07b4f;
+  --color-terracotta-dark: #c9653b;
+  --color-sage: #a8b89a;
+  --color-sage-dark: #8a9c7c;
+  --color-wine: #8b1e2b;
+  --color-ink: #4a3f3a;
+  --color-muted: #9c8f88;
+
+  --font-script: 'Great Vibes', cursive;
+  --font-pinyon: 'Pinyon Script', cursive;
+  --font-serif: 'Cormorant Garamond', Georgia, serif;
+  --font-sans: 'Montserrat', system-ui, sans-serif;
+
+  --shadow-soft: 0 10px 30px -12px rgb(74 63 58 / 0.18);
+  --shadow-card: 0 20px 50px -20px rgb(74 63 58 / 0.3);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-cream text-ink font-serif antialiased;
+    /* Subtle linen texture: fine cross-hatch of two semi-transparent gradients */
+    background-image:
+      repeating-linear-gradient(0deg, rgb(74 63 58 / 0.018) 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(90deg, rgb(74 63 58 / 0.018) 0 1px, transparent 1px 3px);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-terracotta);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+@utility label {
+  @apply font-sans text-[0.68rem] font-light tracking-[0.3em] uppercase text-muted;
+}
+
+@utility section-title {
+  @apply font-script text-5xl leading-tight text-ink;
+}
+
+/* ---------- Envelope intro: ambient motion (transform/opacity only, except the foil text) ---------- */
+
+.foil-text {
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 260% 100%;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.35)) drop-shadow(0 -1px 0 rgba(0, 0, 0, 0.25));
+  animation: foil-shimmer 7s ease-in-out infinite alternate;
+}
+@keyframes foil-shimmer {
+  from { background-position: 0% 50%; }
+  to { background-position: 100% 50%; }
+}
+
+/* light sweep across the wax every 4s */
+.seal-shine {
+  transform: translateX(0) rotate(18deg);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: seal-shine 4s ease-in-out 1.2s infinite;
+}
+@keyframes seal-shine {
+  0% { transform: translateX(0) rotate(18deg); }
+  35%, 100% { transform: translateX(200px) rotate(18deg); }
+}
+
+.gold-dust {
+  will-change: transform, opacity;
+  animation: dust-drift var(--dur) ease-in-out var(--delay) infinite;
+  opacity: 0;
+}
+@keyframes dust-drift {
+  0% { transform: translate3d(0, 0, 0); opacity: 0; }
+  20%, 80% { opacity: var(--o); }
+  100% { transform: translate3d(var(--dx), var(--dy), 0); opacity: 0; }
+}
+
+.light-flare {
+  will-change: transform, opacity;
+  animation: flare-float 16s ease-in-out infinite alternate;
+}
+@keyframes flare-float {
+  0% { transform: translate3d(-6%, -4%, 0) scale(1); opacity: 0.45; }
+  50% { opacity: 0.7; }
+  100% { transform: translate3d(8%, 6%, 0) scale(1.12); opacity: 0.5; }
+}
+
+[data-paused] .foil-text,
+[data-paused] .seal-shine,
+[data-paused] .gold-dust,
+[data-paused] .light-flare {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .foil-text, .seal-shine, .gold-dust, .light-flare { animation: none; }
+  .gold-dust { opacity: 0.4; }
+}
